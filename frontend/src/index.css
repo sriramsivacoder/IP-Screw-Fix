@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ayush-darkgreen: #004A2F;
+  --color-ayush-green: #2E7D32;
+  --color-ayush-rust: #C05640;
+  --color-ayush-charcoal: #212529;
+  --color-ayush-bglight: #F4F9F4;
+  --color-ayush-bgblue: #F0F5FA;
+  --color-ayush-bgred: #FFF2F0;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: #F4F9F4;
+  color: #212529;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

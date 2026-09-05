@@ -5,6 +5,7 @@ from backend.rag.embeddings import embed_query
 
 _client = chromadb.PersistentClient(path=str(CHROMA_DIR))
 
+
 def get_collection():
     try:
         return _client.get_collection(COLLECTION_NAME)
@@ -14,15 +15,29 @@ def get_collection():
             "python -m backend.ingestion.ingest"
         ) from exc
 
-def retrieve(question: str, top_k: int = TOP_K):
+
+def retrieve(question: str, top_k: int = TOP_K, jurisdiction: str = "India") -> list:
     collection = get_collection()
     query_embedding = embed_query(question)
 
-    result = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=top_k,
-        include=["documents", "metadatas", "distances"]
-    )
+    where_filter = {"jurisdiction": jurisdiction}
+
+    try:
+        result = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=top_k,
+            include=["documents", "metadatas", "distances"],
+            where=where_filter,
+        )
+    except Exception:
+        try:
+            result = collection.query(
+                query_embeddings=[query_embedding],
+                n_results=top_k,
+                include=["documents", "metadatas", "distances"],
+            )
+        except Exception:
+            return []
 
     documents = result.get("documents", [[]])[0]
     metadatas = result.get("metadatas", [[]])[0]
@@ -33,7 +48,7 @@ def retrieve(question: str, top_k: int = TOP_K):
         items.append({
             "text": doc,
             "metadata": metadata,
-            "distance": float(distance)
+            "distance": float(distance),
         })
 
     return items
